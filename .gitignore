@@ -1,0 +1,18 @@
+# Données locales / dérivées (jamais versionnées)
+# data/ = overrides.json (prefs perso) + usage-cache.json (dérivé)
+data/
+# .trash/ = suppressions récupérables (contenu utilisateur)
+.trash/
+*.log
+
+# Artefacts éventuels
+.playwright-mcp/
+node_modules/
+bun.lockb
+
+# OS / éditeur
+.DS_Store
+Thumbs.db
+*.swp
+.idea/
+.vscode/

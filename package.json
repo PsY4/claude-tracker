@@ -1,0 +1,10 @@
+{
+  "name": "claude-tracker",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Vue bento live de tous les agents Claude Code locaux",
+  "type": "module",
+  "scripts": {
+    "start": "bun server.js"
+  }
+}

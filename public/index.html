@@ -1,0 +1,97 @@
+<!doctype html>
+<html lang="fr">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Claude Tracker</title>
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;600;700;800&family=JetBrains+Mono:wght@400;500;600&family=Inter:wght@400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="/style.css" />
+  </head>
+  <body>
+    <header>
+      <div class="brand">
+        <span class="logo">◆</span>
+        <h1>Claude Tracker</h1>
+        <span id="conn" class="conn" title="flux live">live</span>
+      </div>
+      <div class="tools">
+        <input id="search" type="search" placeholder="filtrer (nom, chemin, tag, prompt…)" />
+        <select id="filter">
+          <option value="">tous statuts</option>
+          <option value="running">running</option>
+          <option value="recent">recent</option>
+          <option value="idle">idle</option>
+        </select>
+        <button id="trashBtn" class="ghost">🗑 Corbeille (<span id="trashCount">0</span>)</button>
+      </div>
+    </header>
+
+    <main id="grid" class="bento"></main>
+
+    <div id="empty" class="empty" hidden>Aucun projet ne correspond.</div>
+
+    <!-- Modale édition meta -->
+    <div id="editModal" class="modal" hidden>
+      <div class="box">
+        <h2>Éditer <span id="editName"></span></h2>
+        <label>Nom personnalisé (remplace le nom de la carte)
+          <input id="editCustomName" type="text" placeholder="laisser vide pour garder le nom du dossier" />
+        </label>
+        <label>Statut personnalisé
+          <input id="editStatus" type="text" placeholder="ex. à finir, en pause, prod…" />
+        </label>
+        <label>Note
+          <textarea id="editNote" rows="3" placeholder="note libre…"></textarea>
+        </label>
+        <label>Tags (séparés par des virgules)
+          <input id="editTags" type="text" placeholder="client, seo, urgent" />
+        </label>
+        <div class="actions">
+          <button id="editCancel" class="ghost">Annuler</button>
+          <button id="editSave" class="primary">Enregistrer</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Modale suppression -->
+    <div id="delModal" class="modal" hidden>
+      <div class="box danger">
+        <h2>Supprimer le projet</h2>
+        <p class="warn">
+          Déplace vers la <strong>corbeille</strong> (récupérable) :
+        </p>
+        <ul class="paths">
+          <li>l'historique Claude (<code id="delHist"></code>)</li>
+          <li>le dossier de travail réel : <code id="delCwd"></code></li>
+        </ul>
+        <p>Tape le nom du projet <strong id="delName"></strong> pour confirmer :</p>
+        <input id="delConfirm" type="text" autocomplete="off" />
+        <div class="actions">
+          <button id="delCancel" class="ghost">Annuler</button>
+          <button id="delGo" class="danger-btn" disabled>Supprimer → corbeille</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Vue corbeille -->
+    <div id="trashModal" class="modal" hidden>
+      <div class="box wide">
+        <h2>Corbeille</h2>
+        <div id="trashList" class="trash-list"></div>
+        <div class="actions">
+          <button id="trashClose" class="ghost">Fermer</button>
+          <button id="trashPurge" class="danger-btn">Vider la corbeille (définitif)</button>
+        </div>
+      </div>
+    </div>
+
+    <div id="toast" class="toast" hidden></div>
+    <script src="/app.js"></script>
+  </body>
+</html>
