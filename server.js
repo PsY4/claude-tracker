@@ -64,6 +64,23 @@ function openBrowser(url) {
   return proc;
 }
 
+// Ouvre le dossier du projet dans l'explorateur Windows. On convertit le
+// chemin Linux en chemin Windows (UNC \\wsl$\…) via wslpath, puis explorer.exe.
+// NB : explorer.exe renvoie un code de sortie ≠ 0 même en cas de succès → on
+// ne vérifie pas le code. cwd validé en amont contre la liste des projets.
+function openFolder(cwd) {
+  const conv = Bun.spawnSync(["wslpath", "-w", cwd]);
+  const winPath = conv.stdout.toString().trim();
+  if (!winPath) throw new Error("conversion du chemin impossible");
+  const proc = Bun.spawn(["explorer.exe", winPath], {
+    stdin: "ignore",
+    stdout: "ignore",
+    stderr: "ignore",
+  });
+  proc.unref();
+  return proc;
+}
+
 // --- SSE : un rescan toutes les 4 s poussé à tous les clients connectés ---
 const clients = new Set();
 
@@ -162,6 +179,21 @@ Bun.serve({
         return json({ error: "pas de remote git" }, 400);
       openBrowser(proj.repoUrl);
       return json({ ok: true, url: proj.repoUrl });
+    }
+
+    if (pathname === "/api/open-folder" && req.method === "POST") {
+      const { cwd } = await req.json();
+      const projects = lastProjects.length ? lastProjects : await getProjects();
+      if (!findProject(projects, cwd))
+        return json({ error: "projet inconnu" }, 400);
+      try {
+        const st = await stat(cwd);
+        if (!st.isDirectory()) throw new Error("le dossier n'existe plus");
+        openFolder(cwd);
+        return json({ ok: true });
+      } catch (e) {
+        return json({ error: String(e.message || e) }, 400);
+      }
     }
 
     if (pathname === "/api/stream") {

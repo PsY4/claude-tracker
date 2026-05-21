@@ -138,6 +138,7 @@ function render(force) {
       </div>
       ${usageOpen.has(p.cwd) ? `<div class="detail usage-detail">${usageDetailHTML(p.cwd)}</div>` : ""}
       <div class="row-actions">
+        <button class="ghost" data-act="folder" title="ouvrir le dossier dans l'explorateur Windows">🗁</button>
         <button class="ghost" data-act="term" title="ouvrir un terminal Windows ici">▸_</button>
         <button class="ghost" data-act="cont" title="ouvrir un terminal ici et lancer claude --continue">⏵</button>
         ${p.repoUrl ? `<button class="ghost" data-act="gh" title="ouvrir le dépôt : ${esc(p.repoUrl)}">⎇↗</button>` : ""}
@@ -145,6 +146,7 @@ function render(force) {
         <button class="ghost" data-act="del" title="supprimer le projet">🗑</button>
       </div>`;
 
+    el.querySelector('[data-act="folder"]').onclick = () => openFolder(p.cwd);
     el.querySelector('[data-act="term"]').onclick = () => openTerminal(p.cwd);
     el.querySelector('[data-act="cont"]').onclick = () => openTerminal(p.cwd, "continue");
     el.querySelector('[data-act="gh"]')?.addEventListener("click", () => openRepo(p.cwd));
@@ -182,6 +184,19 @@ async function openTerminal(cwd, action = "terminal") {
       body: JSON.stringify({ cwd, action }),
     });
     toast(action === "continue" ? "claude --continue lancé" : "Terminal ouvert");
+  } catch (e) {
+    toast(e.message, true);
+  }
+}
+
+async function openFolder(cwd) {
+  try {
+    await api("/api/open-folder", {
+      method: "POST",
+      headers: { "content-type": "application/json" },
+      body: JSON.stringify({ cwd }),
+    });
+    toast("Dossier ouvert");
   } catch (e) {
     toast(e.message, true);
   }
